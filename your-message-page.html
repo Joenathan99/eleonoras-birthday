@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Message for You, KARIN</title>
+
+<style>
+
+body{
+background-color:#fce4ec;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+flex-direction:column;
+text-align:center;
+padding:20px;
+font-family:Arial, sans-serif;
+}
+
+.message-box,
+.jesture-box{
+background-color:#f8bbd0;
+border-radius:15px;
+padding:30px;
+max-width:600px;
+color:#4a4a4a;
+font-size:1.2rem;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+min-height:300px;
+white-space:pre-wrap;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.cursor{
+display:inline-block;
+width:2px;
+background:#4a4a4a;
+margin-left:2px;
+animation:blink .8s infinite;
+}
+
+@keyframes blink{
+0%,50%,100%{opacity:1}
+25%,75%{opacity:0}
+}
+
+/* MODAL */
+
+.modal{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+justify-content:center;
+align-items:center;
+}
+
+.modal-content{
+background:#f8bbd0;
+padding:25px 35px;
+border-radius:15px;
+max-width:400px;
+box-shadow:0 4px 15px rgba(0,0,0,0.2);
+animation:popIn .5s ease forwards;
+}
+
+@keyframes popIn{
+0%{transform:scale(.5);opacity:0}
+100%{transform:scale(1);opacity:1}
+}
+
+.modal button{
+background:#f06292;
+border:none;
+color:white;
+padding:10px 20px;
+margin:10px;
+border-radius:10px;
+font-size:1rem;
+cursor:pointer;
+transition:.3s;
+}
+
+.modal button:hover{
+background:#d81b60;
+}
+
+/* JESTURE SCREEN */
+
+.jesture-box{
+display:none;
+font-size:1.5rem;
+animation:fadeIn .6s ease forwards;
+}
+
+@keyframes fadeIn{
+0%{opacity:0;transform:scale(.8)}
+100%{opacity:1;transform:scale(1)}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="message-box" id="message-box"></div>
+
+<!-- Jesture screen -->
+<div class="jesture-box" id="jesture-box">
+<p>😂 I knew you would like that!</p>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="moreModal">
+<div class="modal-content">
+
+<p id="modalText">
+Do you want to replay the message or see our memories together? 💖
+</p>
+
+<button id="replayBtn">Replay Message</button>
+<button id="memoriesBtn">See Memories</button>
+
+</div>
+</div>
+
+<script>
+
+const message = `You know, one day i had this crazy idea to do this. I just started working on it cause it just seemed like a crazy idea and why not🤷‍♂️. You seeing this would probably be the craziest also.
+
+I won’t forget the day I laid my eyes on you, we both keep talking about it in different versions cause how could we imagine that meeting that day would spiral into all of this.
+To me, you are the most amazing girl I know. Like i would always say, you look like trouble.
+But boy have i had the time of my life getting to know you, you somehow makes my world feel softer, brighter, and a lot more fun just by being in it. 
+
+Your kindness, your smile, and your heart, you just know how to brighten up every spcae you walk into.
+You are deeply appreciated and i hope that I at the very least have made you understand how important you are to me.
+I know this might probably seem cringe and nerdy but i mean not many people could pull this off. But honestly, this is me, signing up to work OT putting butterflies in your intestines. Not just today, but every chance I get just to remind you how incredible you are.
+
+So i hope as you're reading this you have the biggest smile on your face cause you deserve every smile, not a frown should stain your face, because someone as special as you deserves happiness that never runs out.
+Really hoping you actually waited until 23rd to open this😂
+
+Happy Birthday, princess💖🤍`;
+
+const box=document.getElementById("message-box");
+const modal=document.getElementById("moreModal");
+const replayBtn=document.getElementById("replayBtn");
+const memoriesBtn=document.getElementById("memoriesBtn");
+const modalText=document.getElementById("modalText");
+const jesture=document.getElementById("jesture-box");
+
+let index=0;
+let firstModal=true;
+
+/* TYPEWRITER */
+
+function typeWriter(callback){
+
+box.style.display="flex";
+jesture.style.display="none";
+
+box.innerHTML="";
+index=0;
+
+function type(){
+
+if(index<message.length){
+
+box.innerHTML=message.substring(0,index+1)+'<span class="cursor"></span>';
+index++;
+
+setTimeout(type,90);
+
+}else{
+
+box.innerHTML=message;
+
+if(callback) callback();
+
+}
+
+}
+
+type();
+
+}
+
+/* SHOW MODAL AFTER 7 SECONDS */
+
+function showModal(){
+
+setTimeout(()=>{
+
+modal.style.display="flex";
+
+if(!firstModal){
+
+modalText.textContent="Do you want to see our memories together? 💖";
+
+replayBtn.style.display="none";
+
+}
+
+},7000);
+
+}
+
+/* INITIAL MESSAGE */
+
+typeWriter(showModal);
+
+/* REPLAY BUTTON */
+
+replayBtn.addEventListener("click",()=>{
+
+modal.style.display="none";
+
+box.style.display="none";
+
+jesture.style.display="flex";
+
+firstModal=false;
+
+setTimeout(()=>{
+
+typeWriter(showModal);
+
+},2000);
+
+});
+
+/* MEMORIES BUTTON */
+
+memoriesBtn.addEventListener("click",()=>{
+
+modal.style.display="none";
+
+alert("Here we will open the memories page 🎉");
+
+});
+
+</script>
+
+</body>
+</html>
