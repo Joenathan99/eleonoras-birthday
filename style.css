@@ -1,0 +1,81 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #fce4ec; /* Soft pink background */
+    color: #4a4a4a;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+/* Header */
+header {
+    background-color: #f06292; /* Bright pink header */
+    padding: 50px 0;
+    color: white;
+}
+
+header h1 {
+    font-size: 3rem;
+    margin: 0;
+}
+
+header p {
+    font-size: 1.2rem;
+    font-style: italic;
+}
+
+/* Interactive Section */
+.interactive {
+    padding: 40px;
+    background-color: #f8bbd0; /* Light pink for section */
+}
+
+.interactive h2 {
+    font-size: 2rem;
+    color: #c2185b;
+}
+
+/* Teddy and Letter Container */
+.teddy-container {
+    position: relative;
+    display: inline-block;
+    margin-top: 20px;
+}
+
+/* Teddy Image */
+.teddy {
+    width: 150px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: opacity 1.5s ease-in-out;
+    cursor: pointer;
+}
+
+/* Smiling Teddy with Open Letter */
+.letter {
+    width: 150px;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    cursor: pointer;
+}
+
+/* Hover Effect */
+.teddy-container:hover .teddy {
+    opacity: 0;
+}
+
+.teddy-container:hover .letter {
+    opacity: 1;
+}
+
+/* Footer */
+footer {
+    background-color: #f06292;
+    color: white;
+    padding: 10px 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
