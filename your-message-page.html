@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Message for You, KARIN</title>
+<title>A Message for You, ELEONORA💖</title>
 
 <style>
-
 body{
 background-color:#fce4ec;
 display:flex;
@@ -17,7 +16,11 @@ flex-direction:column;
 text-align:center;
 padding:20px;
 font-family:Arial, sans-serif;
+opacity:1;
+transition:opacity 0.8s ease;
 }
+
+body.fade-out{ opacity:0; }
 
 .message-box,
 .jesture-box{
@@ -48,8 +51,6 @@ animation:blink .8s infinite;
 25%,75%{opacity:0}
 }
 
-/* MODAL */
-
 .modal{
 display:none;
 position:fixed;
@@ -68,12 +69,6 @@ padding:25px 35px;
 border-radius:15px;
 max-width:400px;
 box-shadow:0 4px 15px rgba(0,0,0,0.2);
-animation:popIn .5s ease forwards;
-}
-
-@keyframes popIn{
-0%{transform:scale(.5);opacity:0}
-100%{transform:scale(1);opacity:1}
 }
 
 .modal button{
@@ -85,164 +80,173 @@ margin:10px;
 border-radius:10px;
 font-size:1rem;
 cursor:pointer;
-transition:.3s;
 }
-
-.modal button:hover{
-background:#d81b60;
-}
-
-/* JESTURE SCREEN */
 
 .jesture-box{
 display:none;
 font-size:1.5rem;
-animation:fadeIn .6s ease forwards;
 }
-
-@keyframes fadeIn{
-0%{opacity:0;transform:scale(.8)}
-100%{opacity:1;transform:scale(1)}
-}
-
 </style>
 </head>
 
 <body>
 
+<!-- 🎵 MUSIC -->
+<audio id="bg-music" loop preload="auto">
+  <source src="music/song.mp3" type="audio/mpeg">
+</audio>
+
 <div class="message-box" id="message-box"></div>
 
-<!-- Jesture screen -->
 <div class="jesture-box" id="jesture-box">
 <p>😂 I knew you would like that!</p>
 </div>
 
-<!-- Modal -->
 <div class="modal" id="moreModal">
 <div class="modal-content">
-
 <p id="modalText">
 Do you want to replay the message or see our memories together? 💖
 </p>
-
 <button id="replayBtn">Replay Message</button>
 <button id="memoriesBtn">See Memories</button>
-
 </div>
 </div>
 
 <script>
 
-const message = `You know, one day i had this crazy idea to do this. I just started working on it cause it just seemed like a crazy idea and why not🤷‍♂️. You seeing this would probably be the craziest also.
+const message = `You know, one day i had this crazy idea to do this, i don't know why, we hadn't even met at the time.
+I just started working on it cause it just seemed like a crazy idea and why not🤷‍♂️.
 
-I won’t forget the day I laid my eyes on you, we both keep talking about it in different versions cause how could we imagine that meeting that day would spiral into all of this.
-To me, you are the most amazing girl I know. Like i would always say, you look like trouble.
-But boy have i had the time of my life getting to know you, you somehow makes my world feel softer, brighter, and a lot more fun just by being in it. 
 
-Your kindness, your smile, and your heart, you just know how to brighten up every spcae you walk into.
-You are deeply appreciated and i hope that I at the very least have made you understand how important you are to me.
-I know this might probably seem cringe and nerdy but i mean not many people could pull this off. But honestly, this is me, signing up to work OT putting butterflies in your intestines. Not just today, but every chance I get just to remind you how incredible you are.
+To me, you are the most amazing girl I know. 
+I would always say, you look like trouble and i have really enjoyed getting to know you. I hope you pause today and really feel how extraordinary you are. Not because of anything you try to be, but because of everything you already are; your kindness, your strength, your softness, your laughter, your smile, your stubbornness, your dreams,. All of it. Every piece of you is something I’m endlessly grateful for. Today isn’t just your birthday… it’s a reminder of how special YOU are.
+As you step into this new chapter, I hope it brings you everything your heart has been quietly wishing for. I hope you laugh louder, love deeper, and dream even bigger. I hope you find new reasons to smile, new adventures to chase, and new moments that make you feel alive.
 
-So i hope as you're reading this you have the biggest smile on your face cause you deserve every smile, not a frown should stain your face, because someone as special as you deserves happiness that never runs out.
-Really hoping you actually waited until 23rd to open this😂
+I know this might probably seem cringe and nerdy but i mean not many people could pull this off. Really hope you are smiling reading this.
 
-Happy Birthday, princess💖🤍`;
+Happy Birthday, Beautiful💖
+May this year be your most breathtaking one yet!!!`;
 
-const box=document.getElementById("message-box");
-const modal=document.getElementById("moreModal");
-const replayBtn=document.getElementById("replayBtn");
-const memoriesBtn=document.getElementById("memoriesBtn");
-const modalText=document.getElementById("modalText");
-const jesture=document.getElementById("jesture-box");
+const box = document.getElementById("message-box");
+const modal = document.getElementById("moreModal");
+const replayBtn = document.getElementById("replayBtn");
+const memoriesBtn = document.getElementById("memoriesBtn");
+const modalText = document.getElementById("modalText");
+const jesture = document.getElementById("jesture-box");
 
-let index=0;
-let firstModal=true;
+let index = 0;
+let firstModal = true;
 
-/* TYPEWRITER */
+/* ================= 🎵 FIXED MUSIC SYSTEM ================= */
+
+const music = document.getElementById("bg-music");
+
+const TIME_KEY = "musicTime";
+const STATE_KEY = "musicState";
+
+/* preload improves transition smoothness (fixes micro-gap feel) */
+music.preload = "auto";
+music.load();
+
+/* restore state */
+window.addEventListener("load", () => {
+
+    const savedTime = parseFloat(localStorage.getItem(TIME_KEY));
+    const state = localStorage.getItem(STATE_KEY);
+
+    if (!isNaN(savedTime)) {
+        music.currentTime = savedTime;
+    }
+
+    if (state === "playing") {
+        const playPromise = music.play();
+
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                document.addEventListener("click", () => music.play(), { once: true });
+            });
+        }
+    }
+});
+
+/* unlock audio */
+function unlockMusic() {
+    music.play().catch(() => {});
+    localStorage.setItem(STATE_KEY, "playing");
+}
+
+document.addEventListener("click", unlockMusic, { once: true });
+document.addEventListener("touchstart", unlockMusic, { once: true });
+
+/* save progress */
+setInterval(() => {
+    if (!music.paused && !music.ended) {
+        localStorage.setItem(TIME_KEY, music.currentTime);
+    }
+}, 1000);
+
+window.addEventListener("beforeunload", () => {
+    localStorage.setItem(TIME_KEY, music.currentTime);
+});
+
+/* ================= TYPEWRITER ================= */
 
 function typeWriter(callback){
+if(!box) return;
 
 box.style.display="flex";
 jesture.style.display="none";
-
 box.innerHTML="";
 index=0;
 
 function type(){
-
 if(index<message.length){
-
 box.innerHTML=message.substring(0,index+1)+'<span class="cursor"></span>';
 index++;
-
 setTimeout(type,90);
-
 }else{
-
 box.innerHTML=message;
-
 if(callback) callback();
-
 }
-
 }
-
 type();
-
 }
-
-/* SHOW MODAL AFTER 7 SECONDS */
 
 function showModal(){
-
 setTimeout(()=>{
-
 modal.style.display="flex";
 
 if(!firstModal){
-
 modalText.textContent="Do you want to see our memories together? 💖";
-
 replayBtn.style.display="none";
-
 }
 
 },7000);
-
 }
 
-/* INITIAL MESSAGE */
-
 typeWriter(showModal);
 
-/* REPLAY BUTTON */
+/* ================= EVENTS ================= */
 
-replayBtn.addEventListener("click",()=>{
-
+replayBtn?.addEventListener("click",()=>{
 modal.style.display="none";
-
 box.style.display="none";
-
 jesture.style.display="flex";
-
 firstModal=false;
 
-setTimeout(()=>{
-
-typeWriter(showModal);
-
-},2000);
-
+setTimeout(()=>typeWriter(showModal),2000);
 });
 
-/* MEMORIES BUTTON */
-
-memoriesBtn.addEventListener("click",()=>{
+memoriesBtn?.addEventListener("click",()=>{
 
 modal.style.display="none";
+localStorage.setItem(STATE_KEY, "playing");
 
-alert("Here we will open the memories page 🎉");
+document.body.classList.add("fade-out");
 
+setTimeout(()=>{
+window.location.href="memories.html";
+},800);
 });
 
 </script>

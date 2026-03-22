@@ -3,23 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday, KARIN!</title>
+    <title>Happy Birthday, ELEONORA!!</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
+    <!-- 🎵 BACKGROUND MUSIC (CONTROLLED GLOBALLY) -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="music/song.mp3" type="audio/mpeg">
+    </audio>
 
     <header>
         <h1>Happy Birthday, ELEONORA💖</h1>
         <p>Many websites exist in the world today. But this one? Made just for you💖</p>
- 	<P> Think of it as a birthday card but no cards really😅</p>
+        <p>Think of it as a birthday card but no cards really😅</p>
     </header>
 
     <section class="interactive">
         <h2>Want to know what this is about? It's simple, just ask Teddy</h2>
+
         <div class="teddy-container" onclick="goToMessage()">
-            <!-- Teddy Bear Image -->
             <img src="teddy.png" alt="Teddy Bear Holding a Letter" class="teddy" />
-            <!-- Letter Image -->
             <img src="letter.png" alt="Letter" class="letter" />
         </div>
     </section>
@@ -29,10 +34,49 @@
     </footer>
 
     <script>
-        function goToMessage() {
-            window.location.href = "your-message-page.html"; 
-            // Replace "your-message-page.html" with the actual file containing the personalized message
+
+        const music = document.getElementById("bg-music");
+
+        const TIME_KEY = "musicTime";
+        const STATE_KEY = "musicState";
+
+        /* ================= INDEX PAGE FIX ================= */
+        window.addEventListener("load", () => {
+
+            // 🔥 ALWAYS restart on index page
+            music.currentTime = 0;
+
+            // keep global state ON for other pages
+            localStorage.setItem(STATE_KEY, "playing");
+
+            music.play().catch(() => {});
+        });
+
+        /* ================= INSTANT UNLOCK ================= */
+        function startMusic() {
+            music.play().catch(() => {});
+            localStorage.setItem(STATE_KEY, "playing");
         }
+
+        document.addEventListener("click", startMusic, { once: true });
+        document.addEventListener("touchstart", startMusic, { once: true });
+
+        /* ================= SAVE PROGRESS ================= */
+        setInterval(() => {
+            if (!music.paused && !music.ended) {
+                localStorage.setItem(TIME_KEY, music.currentTime);
+            }
+        }, 1000);
+
+        window.addEventListener("beforeunload", () => {
+            localStorage.setItem(TIME_KEY, music.currentTime);
+        });
+
+        /* ================= NAVIGATION ================= */
+        function goToMessage() {
+            window.location.href = "your-message-page.html";
+        }
+
     </script>
 
 </body>

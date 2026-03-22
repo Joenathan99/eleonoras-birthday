@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memories 💖</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial, sans-serif;
+
+background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+
+overflow:hidden;
+opacity:0;
+transition:opacity 0.8s ease;
+}
+
+/* SLIDESHOW */
+.slideshow{
+position:relative;
+width:100vw;
+height:100vh;
+}
+
+/* SLIDES */
+.slide{
+position:absolute;
+width:100%;
+height:100%;
+display:flex;
+justify-content:center;
+align-items:center;
+
+opacity:0;
+transition:opacity 1.2s ease;
+background: rgba(0,0,0,0.25);
+overflow:hidden;
+}
+
+.slide.active{
+opacity:1;
+z-index:2;
+}
+
+/* BLURRED BACKGROUND */
+.slide::before{
+content:"";
+position:absolute;
+width:100%;
+height:100%;
+background: inherit;
+filter: blur(35px);
+transform: scale(1.2);
+z-index:0;
+}
+
+/* MEDIA */
+.slide img,
+.slide video{
+max-width:90%;
+max-height:90%;
+width:auto;
+height:auto;
+
+object-fit:contain;
+
+z-index:1;
+
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* 💖 FINAL MESSAGE */
+.final-message{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
+
+padding:30px;
+
+background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+
+color:#c2185b;
+font-size:1.6rem;
+font-family:Arial, sans-serif;
+line-height:1.6;
+
+opacity:0;
+transform:scale(0.95);
+transition:opacity 1.2s ease, transform 1.2s ease;
+
+z-index:10;
+pointer-events:none;
+}
+
+.final-message.show{
+opacity:1;
+transform:scale(1);
+}
+
+/* 🔥 RESTART BUTTON */
+.restart-btn{
+position:fixed;
+bottom:80px;
+left:50%;
+transform:translateX(-50%);
+
+padding:12px 24px;
+font-size:1rem;
+
+border:none;
+border-radius:25px;
+
+background:#c2185b;
+color:white;
+
+cursor:pointer;
+
+opacity:0;
+transition:opacity 1s ease;
+
+z-index:11;
+pointer-events:none;
+}
+
+.restart-btn.show{
+opacity:1;
+pointer-events:auto;
+}
+
+/* HIDE AUDIO */
+audio{
+display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="slideshow" id="slideshow"></div>
+
+<!-- 💖 FINAL MESSAGE -->
+<div id="finalMessage" class="final-message">
+    Obviously, not enough memories made…<br><br>
+    Looking forward to creating so much more with you💖 <br><br>
+    Happy brithday once again Princess💖
+</div>
+
+<!-- 🔥 RESTART BUTTON -->
+<button id="restartBtn" class="restart-btn">See it again??!!💖</button>
+
+<!-- 🎵 MUSIC -->
+<audio id="bg-music" loop preload="auto">
+<source src="music/song.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+/* ================= MUSIC SYSTEM ================= */
+
+const TIME_KEY = "musicTime";
+const STATE_KEY = "musicState";
+
+const music = document.getElementById("bg-music");
+
+window.addEventListener("load", () => {
+
+document.body.style.opacity = "1";
+
+const savedTime = parseFloat(localStorage.getItem(TIME_KEY));
+const state = localStorage.getItem(STATE_KEY);
+
+if (!isNaN(savedTime)) {
+    music.currentTime = savedTime;
+}
+
+if (state === "playing") {
+    music.play().catch(()=>{});
+}
+
+document.addEventListener("click", () => {
+    music.play().catch(()=>{});
+    localStorage.setItem(STATE_KEY, "playing");
+}, { once:true });
+
+});
+
+/* save music position */
+setInterval(() => {
+if (!music.paused) {
+localStorage.setItem(TIME_KEY, music.currentTime);
+}
+}, 1000);
+
+
+/* ================= SLIDESHOW BUILD ================= */
+
+const container = document.getElementById("slideshow");
+
+const IMAGE_COUNT = 4;
+const VIDEO_START = 5;
+const VIDEO_END = 9;
+
+for(let i = 1; i <= IMAGE_COUNT; i++){
+    container.innerHTML += `
+        <div class="slide ${i === 1 ? 'active' : ''}">
+            <img src="images/${i}.jpg">
+        </div>
+    `;
+}
+
+for(let i = VIDEO_START; i <= VIDEO_END; i++){
+    container.innerHTML += `
+        <div class="slide">
+            <video muted playsinline>
+                <source src="videos/${i}.mp4" type="video/mp4">
+            </video>
+        </div>
+    `;
+}
+
+
+/* ================= SLIDESHOW LOGIC ================= */
+
+const slides = document.querySelectorAll(".slide");
+let index = 0;
+let slideTimeout;
+
+function showSlide(i){
+
+slides.forEach((s)=>{
+    s.classList.remove("active");
+
+    const vid = s.querySelector("video");
+    if(vid){
+        vid.pause();
+        vid.currentTime = 0;
+        vid.onended = null;
+    }
+});
+
+const current = slides[i];
+current.classList.add("active");
+
+const video = current.querySelector("video");
+
+if(video){
+
+    video.play().catch(()=>{});
+
+    video.onended = () => {
+
+        if(index === slides.length - 1){
+
+            const finalMsg = document.getElementById("finalMessage");
+            const restartBtn = document.getElementById("restartBtn");
+
+            setTimeout(() => {
+                finalMsg.classList.add("show");
+            }, 600);
+
+            // 💖 SHOW BUTTON AFTER 20 SECONDS
+            setTimeout(() => {
+                restartBtn.classList.add("show");
+            }, 10000);
+
+        } else {
+            nextSlide();
+        }
+    };
+
+}else{
+    clearTimeout(slideTimeout);
+    slideTimeout = setTimeout(nextSlide, 6000);
+}
+}
+
+function nextSlide(){
+index = (index + 1) % slides.length;
+showSlide(index);
+}
+
+showSlide(index);
+
+
+/* ================= RESTART BUTTON ================= */
+
+document.getElementById("restartBtn").addEventListener("click", () => {
+    window.location.href = "index.html";
+});
+
+</script>
+
+</body>
+</html>
